@@ -19,6 +19,7 @@ using KhaoPiyo.Models;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.MyOrderModel;
 using System.Linq;
+using System.Data.Entity.Validation;
 
 namespace KhaoPiyo
 {
@@ -89,7 +90,7 @@ namespace KhaoPiyo
 
             Log.Write("In SetOrder", "");
 
-            Log.Write("-----------------------------------------------Response object-----------------------------------------------------------", "nt");
+            Log.Write("-----------------------------------------------Request object-----------------------------------------------------------", "nt");
 
             Log.Write(Newtonsoft.Json.JsonConvert.SerializeObject(order), "nt");
 
@@ -155,8 +156,6 @@ namespace KhaoPiyo
                         });
 
 
-
-
                         foreach (var item in order.order.items)
                         {
                             double charges = 0;
@@ -173,7 +172,6 @@ namespace KhaoPiyo
                                     opetions_to_add += " / ";
                                     item_Options_To_Add_Rate += " / ";
                                 }
-
                             }
 
 
@@ -213,8 +211,8 @@ namespace KhaoPiyo
                                     Item_Tax = ItemTax,
                                     Discount = item.discount,
                                     Food_Type = item.food_type,
-                                    Options_To_Add_Title = opetions_to_add.Remove(opetions_to_add.LastIndexOf("/")),
-                                    Options_To_Add_Rate = item_Options_To_Add_Rate.Remove(item_Options_To_Add_Rate.LastIndexOf("/")),
+                                    Options_To_Add_Title = opetions_to_add!=""&& opetions_to_add.Length>0&& opetions_to_add.Contains("/") ? opetions_to_add.Remove(opetions_to_add.LastIndexOf("/")):"",
+                                    Options_To_Add_Rate = item_Options_To_Add_Rate!="" && item_Options_To_Add_Rate .Length>0&& item_Options_To_Add_Rate.Contains("/") ? item_Options_To_Add_Rate.Remove(item_Options_To_Add_Rate.LastIndexOf("/")):"",
                                     Options_To_Remove = "",
                                     Store_Id = order.order.store.merchant_ref_id != null ? order.order.store.merchant_ref_id.ToString() : "",
                                     Item_Total = item.total_with_tax,
@@ -366,7 +364,7 @@ namespace KhaoPiyo
                 Log.Write("In SetRiderStatus", "");
 
 
-               Log.Write("-----------------------------------------------Response object-----------------------------------------------------------", "nt");
+               Log.Write("-----------------------------------------------Request object-----------------------------------------------------------", "nt");
 
                 Log.Write(Newtonsoft.Json.JsonConvert.SerializeObject(riderStatus), "nt");
 
@@ -449,7 +447,7 @@ namespace KhaoPiyo
             Log.Write("In SetOrderStatus", "");
 
 
-            Log.Write("-----------------------------------------------Response object-----------------------------------------------------------", "nt");
+            Log.Write("-----------------------------------------------Request object-----------------------------------------------------------", "nt");
 
             Log.Write(Newtonsoft.Json.JsonConvert.SerializeObject(orderStatus), "");
 
@@ -531,7 +529,7 @@ namespace KhaoPiyo
 
             Log.Write("In SetRandomStatus", "");
 
-            Log.Write("-----------------------------------------------Response object-----------------------------------------------------------", "nt");
+            Log.Write("-----------------------------------------------Request object-----------------------------------------------------------", "nt");
 
             Log.Write(Newtonsoft.Json.JsonConvert.SerializeObject(random_Message2), "");
 
@@ -544,7 +542,7 @@ namespace KhaoPiyo
                 {
                     entities.Reference_Master.Add(new Reference_Master
                     {
-                        Reference_Id = random_Message2.reference != null || random_Message2.reference != "" ? random_Message2.reference : random_Message2.reference_id,
+                        Reference_Id = random_Message2.reference != null && random_Message2.reference != "" ? random_Message2.reference : random_Message2.reference_id,
                         sError = random_Message2.message
                     });
 
@@ -586,6 +584,18 @@ namespace KhaoPiyo
                 reply.Message = ex.Message + " " + ex.InnerException;
 
             }
+            //catch (DbEntityValidationException ex) {
+            //    foreach (var eve in ex.EntityValidationErrors)
+            //    {
+            //        Console.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+            //            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+            //        foreach (var ve in eve.ValidationErrors)
+            //        {
+            //            Console.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+            //                ve.PropertyName, ve.ErrorMessage);
+            //        }
+            //    }
+            //}
 
 
             Log.Write("-----------------------------------------------Response object-----------------------------------------------------------", "nt");
